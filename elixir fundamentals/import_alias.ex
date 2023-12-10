@@ -15,7 +15,7 @@ defmodule ImportingAliasing do
 
   def testing() do
     testing_import()
-    true
+    nil
   end
 
   def testing_alias() do

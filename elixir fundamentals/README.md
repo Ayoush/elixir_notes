@@ -291,3 +291,38 @@ Hello from alias
 iex(3)> 
 ```
 
+The purpose of module attributes is twofold: they can be used as compile-time con- stants, and you can register any attribute, which can then be queried in runtime. Elixir registers some module attributes by default. For example, the attributes @moduledoc and @doc can be used to provide docu- mentation for modules and functions:
+```elixir
+defmodule Circle do
+  @moduledoc "Implements basic circle functions"
+  @pi 3.14159
+  @doc "Computes the area of a circle"
+  def area(r), do: r*r*@pi
+  @doc "Computes the circumference of a circle"
+  def circumference(r), do: 2*r*@pi
+end
+```
+
+lists are recursive structures of (head, tail ) pairs.
+To get the head of the list, you can use the hd function. The tail can be obtained by calling the tl function:
+```elixir
+iex(1)> hd([1, 2, 3, 4])
+1
+iex(2)> tl([1, 2, 3, 4])
+[2, 3, 4]
+```
+Both operations are O(1), because they amount to reading one or the other value from the (head, tail ) pair.
+
+A closure always captures a specific memory location. Rebinding a variable doesn’t
+affect the previously defined lambda that references the same symbolic name:
+```elixir
+iex(1)> outside_var = 5 
+iex(2)> lambda = fn -> IO.puts(outside_var) end
+iex(3)> outside_var = 6
+location of outside_var
+iex(4)> lambda.()
+5
+```
+
+# Understanding the runtime
+he Elixir runtime is a BEAM instance. Once the compiling is done and the system is started, Erlang takes control. It’s important to be familiar with some details of the virtual machine so you can understand how your systems work. Regardless of how you start the runtime, an OS process for the BEAM instance is started, and everything runs inside that process. This is true even when you’re using the iex shell. If you need to find this OS process, you can look it up under the name beam.Once the system is started, you run some code, typically by calling functions from modules. How does the runtime access the code? The VM keeps track of all modules loaded in memory. When you call a function from a module, BEAM first checks whether the module is loaded. If it is, the code of the corresponding function is executed. Oth- erwise the VM tries to find the compiled module file — the bytecode — on the disk and then load it and execute the function.
